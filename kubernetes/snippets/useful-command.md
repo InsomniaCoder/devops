@@ -16,8 +16,17 @@ kubectl run -i --tty --rm busybox-test --image=alpine -- sh
 
 // list release
 helm ls 
+
 // list all release
 helm ls -a
+
+// show information about current release
+// values
+helm get values test
+// all k8s objects
+helm get manifest test
+// all info, chart name, manifest, values and notes
+helm get all test
 
 ### Use official chart
 
@@ -30,6 +39,11 @@ helm search repo bitnami/mysql --versions
 
 // download official chart to see implementation and values
 helm pull bitnami/mysql --version 8.5.8 . --untar
+
+// view official chart info
+helm show chart bitnami/redis
+helm show values bitnami/redis
+
 
 // install release from official chart with version
 helm upgrade mysql bitnami/mysql --version 8.5.8 -f values-uat01.yaml --install
