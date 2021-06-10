@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/redirect-regex: ^https://www.original.com/(.*)
+    traefik.ingress.kubernetes.io/redirect-replacement: https://www.redirected.com/$1
+  labels:
+    app: test-redirect
+    traffic-type: external
+  name: test-redirect-ingress
+spec:
+  rules:
+  - host: www.original.com
+    http:
+      paths:
+      - backend:
+          serviceName: app-service
+          servicePort: http
+        path: /
+  - host: www.redirected.com
+    http:
+      paths:
+      - backend:
+          serviceName:  app-service
+          servicePort: http
+        path: /
