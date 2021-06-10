@@ -1,0 +1,99 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    app.kubernetes.io/instance: filebeat
+  name: filebeat
+spec:
+  minReadySeconds: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: filebeat
+      app.kubernetes.io/name: filebeat
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: filebeat
+        app.kubernetes.io/name: filebeat
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - devops
+      containers:
+      - args:
+        - -e
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        image: docker.elastic.co/beats/filebeat-oss:7.6.2
+        imagePullPolicy: IfNotPresent
+        name: filebeat
+        ports:
+        - containerPort: 5066
+          protocol: TCP
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: /usr/share/filebeat/filebeat.yml
+          name: filebeat-config
+          readOnly: true
+          subPath: filebeat.yml
+        - mountPath: /usr/share/filebeat/data
+          name: data
+        - mountPath: /var/log
+          name: varlog
+          readOnly: true
+        - mountPath: /var/lib/docker/containers
+          name: varlibdockercontainers
+          readOnly: true
+      - image: trustpilot/beat-exporter:0.1.1
+        imagePullPolicy: IfNotPresent
+        name: filebeat-prometheus-exporter
+        ports:
+        - containerPort: 9479
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      securityContext: {}
+      serviceAccount: filebeat
+      serviceAccountName: filebeat
+      terminationGracePeriodSeconds: 60
+      tolerations:
+      - operator: Exists
+      volumes:
+      - hostPath:
+          path: /var/log
+          type: ""
+        name: varlog
+      - hostPath:
+          path: /var/lib/docker/containers
+          type: ""
+        name: varlibdockercontainers
+      - name: filebeat-config
+        secret:
+          defaultMode: 420
+          secretName: filebeat
+      - hostPath:
+          path: /var/lib/filebeat
+          type: DirectoryOrCreate
+        name: data
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
