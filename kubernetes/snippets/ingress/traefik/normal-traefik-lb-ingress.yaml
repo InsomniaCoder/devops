@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+  labels:
+    app: traefik
+    traffic-type: internal
+  name: traefik-internal
+spec:
+  rules:
+  - host: traefik-internal.svc
+    http:
+      paths:
+      - backend:
+          serviceName: traefik-internal
+          servicePort: 80
