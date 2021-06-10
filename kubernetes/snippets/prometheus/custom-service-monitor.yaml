@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: prometheus-operator-monitor-java-prometheus
+    # operator will only read Service Monitor with this label
+    release: prometheus-operator
+  name: prometheus-operator-monitor-java-prometheus
+  namespace: devops
+spec:
+  endpoints:
+  - path: /actuator/prometheus
+    port: http
+  namespaceSelector:
+    matchNames:
+    - test01
+  selector:
+    matchLabels:
+      app: java-app
