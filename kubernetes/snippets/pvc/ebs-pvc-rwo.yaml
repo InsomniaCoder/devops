@@ -1,0 +1,21 @@
+# PVC is namespace bound
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    app: test
+    #pv.kubernetes.io/bind-completed: "yes"
+    #pv.kubernetes.io/bound-by-controller: "yes"
+    #volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+    #volume.kubernetes.io/selected-node: ip-x-x-x-x.ap-southeast-1.compute.internal
+  labels:
+    app: redis
+  name: redis-master-0
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: standard-wttf
+  # storageClassName: fast-wttf

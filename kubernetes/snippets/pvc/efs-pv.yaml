@@ -1,0 +1,23 @@
+# Persistence Volume is at cluster scope, we should only create it via PVC unless we use EFS
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    app: test
+    # pv.kubernetes.io/bound-by-controller: "yes"
+  name: efs-pv
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 5Gi
+  csi:
+    driver: efs.csi.aws.com
+    # efs id from AWS
+    volumeHandle: fs-xxxxxxxx 
+  mountOptions:
+  - tls
+  - iam
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  volumeMode: Filesystem
