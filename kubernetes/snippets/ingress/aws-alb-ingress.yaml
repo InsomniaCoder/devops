@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:<accountname>:certificate/<certificate-id>
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/load-balancer-attributes: access_logs.s3.enabled=true,access_logs.s3.bucket=elb-log,deletion_protection.enabled=true
+    alb.ingress.kubernetes.io/target-type: ip
+    kubernetes.io/ingress.class: alb-devops
+  labels:
+    app: test
+  name: alb-test-ingress
+  namespace: test01
+spec:
+  rules:
+  - host: test-svc.tech
+    http:
+      paths:
+      - backend:
+          serviceName: a
+          servicePort: 80
+        path: /api/*
+      - backend:
+          serviceName: b
+          servicePort: 80
+        path: /service/*
+      - backend:
+          serviceName: a2
+          servicePort: 80
+        path: /v2/*

@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+  labels:
+    #traefik routes traffic based on labels
+    traffic-type: internal
+  name: test-ingress
+  namespace: test01
+spec:
+  rules:
+  - host: test01.svc.test
+    http:
+      paths:
+      - backend:
+          serviceName: test-service
+          servicePort: http
+        path: /
