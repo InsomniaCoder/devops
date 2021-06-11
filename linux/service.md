@@ -1,0 +1,4 @@
+// list running service
+```
+systemctl
+```
