@@ -1,0 +1,25 @@
+name: eks-nonprod
+
+
+vpc_id: vpc-xxxxx
+
+private_subnets : [
+      "subnet-xxxx",
+      "subnet-xxxx",
+      "subnet-xxxx",
+]
+
+worker_node_type : c5.large
+worker_node_max : 1
+worker_node_desire : 1
+worker_node_min : 1
+
+devops_node_type : c5.large
+devops_node_max : 1
+devops_node_desire: 1
+devops_node_min : 1
+
+edge_node_type : c5.large
+edge_node_max : 1
+edge_node_desire: 1
+edge_node_min : 1
