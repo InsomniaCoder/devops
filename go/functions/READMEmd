@@ -1,0 +1,31 @@
+## Convention
+
+### No return
+
+func greet(user string){
+
+}
+
+### Return Unnamed Value
+
+func add(a, b int) int64 {
+
+}
+
+### Return Multiple Named Value
+
+func addMultiply(a, b int) (add int, multiply int){
+    add = a + b
+    multiply = a * b
+    
+    return
+}
+
+### Defer
+
+will run at the end of the function or when return get run
+
+`defer functionA()`
+
+defer gets stacked, so first defer will run last
+
