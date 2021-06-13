@@ -44,8 +44,6 @@ Reconcilliation loop will receive a `Request` which contains
 the reconciliation method will be called for every Object / CRD our Operator concerns with.
 
 
-
-
 Reconciliation is on /controllers/jobwatcher_controller.go
 
 //+kubebuilder: is a `marker`
@@ -57,3 +55,41 @@ it will create required object for us for example, create rbac to be able to get
 //+kubebuilder:rbac:groups:resources:verbs is used to tell KubeBuilder to create cluster role and role binding
 
 
+## Indicate which CRD our Operators manage
+
+We indicate it using `For` in SetupWithManager method
+
+```
+func (r *JobWatcherReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	return ctrl.NewControllerManagedBy(mgr).
+        //here
+		For(&batchv1.JobWatcher{}).
+		Complete(r)
+}
+```
+
+and we can use
+
+`Owns()` for child objects you’re creating.
+`Watches()` for any objects in the cluster.
+
+For example, `Owns(&kbatch.Job{})`, your reconciliation loop will be called for every jobs that’s created, deleted, or modified — and with your CRD as its owner. 
+
+The input Request parameter of the Reconcile method will be the owner instance of the job.
+
+for Watches method in the builder for the Job kind, we will be notified for every change in a job in the cluster.
+
+
+## Building and Deploying Operator
+
+run `make install`
+
+Manifests are now found under the config folder with all the Kustomize patches.
+
+we can also run operator binary directly to cluster via
+
+`make run`
+
+For real use
+
+run `make docker-build docker-push` and generate a Deployment object with `make deploy`
