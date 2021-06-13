@@ -1,0 +1,19 @@
+domain: insomniacoder.github.com
+layout:
+- go.kubebuilder.io/v3
+plugins:
+  manifests.sdk.operatorframework.io/v2: {}
+  scorecard.sdk.operatorframework.io/v2: {}
+projectName: job-watcher
+repo: github.com/insomniacoder/job-watcher-operator
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: insomniacoder.github.com
+  group: batch
+  kind: JobWatcher
+  path: github.com/insomniacoder/job-watcher-operator/api/v1
+  version: v1
+version: "3"

@@ -1,0 +1,7 @@
+apiVersion: batch.insomniacoder.github.com/v1
+kind: JobWatcher
+metadata:
+  name: jobwatcher-sample
+spec:
+  # Add fields here
+  foo: bar
