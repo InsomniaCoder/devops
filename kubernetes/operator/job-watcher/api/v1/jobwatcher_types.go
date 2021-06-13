@@ -28,14 +28,36 @@ type JobWatcherSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of JobWatcher. Edit jobwatcher_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// +kubebuilder:validation:Minimum=0
+	// Time to live in seconds for a completed job
+	CompletedTTL int64 `json:"completedTTL"`
+
+	// +kubebuilder:validation:Minimum=0
+	// Time to live in seconds for a failed job
+	FailedTTL int64 `json:"failedTTL"`
+
+	// +optional
+	// +kubebuilder:validation:MinItems=0
+	// List of namespaces to watch
+	NamespacePatterns []string `json:"namespaces,omitempty"`
+
+	// +optional
+	// +kubebuilder:validation:MinItems=0
+	// Job name pattern to watch
+	JobNamePatterns []string `json:"jobNames,omitempty"`
+
+	// +kubebuilder:validation:Minimum=10
+	// Frequency of the TTL checks
+	Frequency int64 `json:"frequency"`
 }
 
 // JobWatcherStatus defines the observed state of JobWatcher
 type JobWatcherStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	LastStarted  metav1.Time `json:"lastStarted,omitempty"`
+	LastFinished metav1.Time `json:"lastFinished,omitempty"`
 }
 
 //+kubebuilder:object:root=true
