@@ -19,7 +19,7 @@ under `/var/lib`
   amazon calico cloud containerd dockershim nfs      
 ```
 
-we have binaries stored at /etc/kubernetes with these components
+we have binaries stored at /srv/kubernetes with these components
 
 bin -> store kubelet, kube-proxy
 cni -> bin net.d network
@@ -34,7 +34,7 @@ init script
 ```
 !/bin/bash
 
-LOCK_FILE="/etc/kubernetes/.lock"
+LOCK_FILE="/srv/kubernetes/.lock"
 
 # check lock
 [ -e "$LOCK_FILE" ] && exit 2
@@ -76,8 +76,8 @@ ExecStart=/srv/kubernetes/bin/kubelet \
   --node-labels=internal-ip=${PRIVATE_IP} \
   --node-labels=node-role.kubernetes.io/${PRIVATE_IP}=true \
   --node-labels=node-role.kubernetes.io/node=true \
-  --node-labels=k8s.wecash.io/generation=2 \
-  --node-labels=k8s.wecash.io/env=nonprod \
+  --node-labels=k8s.non-prod.io/generation=2 \
+  --node-labels=k8s.non-prod.io/env=nonprod \
   --kube-reserved=cpu=100m,memory=300Mi \
   --system-reserved=cpu=100m,memory=200Mi \
   --eviction-minimum-reclaim=memory.available=1Gi \
