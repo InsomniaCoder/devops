@@ -542,11 +542,6 @@ we will deploy the DNS add-on which provides DNS based service discovery, backed
 
 `kubectl apply -f https://storage.googleapis.com/kubernetes-the-hard-way/coredns-1.8.yaml`
 
-
-
-
-
-
 ### Directory
 
 under `/var/lib`
@@ -577,9 +572,157 @@ we have
 
 /bin stores binaries of `calico`, `calio-ipam`, `flannel`, `loopback`, etc
 
+/net.d stores
 
-### Initial script to run all the services (kube-proxy, kubelet)
+`calico-kubeconfig`
 
+```
+# Kubeconfig file for Calico CNI plugin.
+apiVersion: v1
+kind: Config
+clusters:
+- name: local
+  cluster:
+    server: https://[10.xxx.0.1]:443
+    certificate-authority-data: xxxx
+users:
+- name: calico
+  user:
+    token: "xxx"
+contexts:
+- name: calico-context
+  context:
+    cluster: local
+    user: calico
+current-context: calico-context
+```
+
+`10-calico.conflist`
+
+```
+
+  "name": "k8s-pod-network",
+  "cniVersion": "0.3.1",
+  "plugins": [
+    {
+      "type": "calico",
+      "log_level": "info",
+      "datastore_type": "kubernetes",
+      "nodename": "ip-10-x-x-x.ap-southeast-1.compute.internal",
+      "mtu": 1440,
+      "ipam": {
+          "type": "calico-ipam"
+      },
+      "policy": {
+          "type": "k8s"
+      },
+      "kubernetes": {
+          "kubeconfig": "/srv/kubernetes/cni/net.d/calico-kubeconfig"
+      }
+    },
+    {
+      "type": "portmap",
+      "snat": true,
+      "capabilities": {"portMappings": true}
+    }
+  ]
+}
+```
+
+#### conf
+
+kube-proxy-config.yml
+
+```
+kind: KubeProxyConfiguration
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+clientConnection:
+  kubeconfig: "/srv/kubernetes/kubeconfig/kube-proxy.kubeconfig"
+mode: "ipvs"
+clusterCIDR: "10.xxx.0.0/16"
+```
+
+#### kubeconfig
+
+`bootstrap.kubeconfig`
+
+```
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: x
+    server: https://api-server-dns:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubelet-bootstrap
+  name: default
+current-context: default
+kind: Config
+preferences: {}
+users:
+- name: kubelet-bootstrap
+  user:
+    token: xxx.xxxx
+```
+
+`kubelet.kubeconfig`
+
+```
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: xxxx
+    server: https://api-server-dns:6443
+  name: default-cluster
+contexts:
+- context:
+    cluster: default-cluster
+    namespace: default
+    user: default-auth
+  name: default-context
+current-context: default-context
+kind: Config
+preferences: {}
+users:
+- name: default-auth
+  user:
+    client-certificate: /srv/kubernetes/pki/kubelet-client-current.pem
+    client-key: /srv/kubernetes/pki/kubelet-client-current.pem
+```
+
+`kube-proxy.kubeconfig`
+
+```
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: xxxx
+    server: https://apiserver-dns:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: system:kube-proxy
+  name: default
+current-context: default
+kind: Config
+preferences: {}
+users:
+- name: system:kube-proxy
+  user:
+    client-certificate-data: xxx
+    client-key-data: xxxx
+```
+
+#### pki
+
+`ca.pem  kubelet-client-date.pem  kubelet-client-current.pem  kubelet.crt  kubelet.key`
+
+#### scripts
+
+Initial script to run all the services (kube-proxy, kubelet)
 
 ```
 !/bin/bash
@@ -660,3 +803,4 @@ touch $LOCK_FILE
 
 ### Reference
 https://github.com/kelseyhightower/kubernetes-the-hard-way
+
