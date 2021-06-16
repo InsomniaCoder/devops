@@ -1,8 +1,12 @@
 // list running service
 
-```
-systemctl
-```
+`systemctl`
+
+// check service status and detail
+`systemctl status service-name`
+
+// service directory
+`usr/lib/systemd/system/service-name`
 
 // enable service
 ```
