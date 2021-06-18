@@ -1,0 +1,27 @@
+{{- if .Values.hpa.enabled -}}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "python-app.fullname" . }}-hpa
+  labels:
+    app: {{ template "python-app.name" . }}
+    chart: {{ template "python-app.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta2
+    kind: Deployment
+    name: {{ template "python-app.fullname" . }}-{{ .Values.hpa.deploymentName }}
+  maxReplicas: {{ .Values.hpa.maxReplicas }}
+  minReplicas: {{ .Values.replicaCount }}
+  metrics:
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: {{ .Values.hpa.memory.target }}
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.hpa.cpu.target }}
+{{- end }}

@@ -21,3 +21,4 @@ The HorizontalPodAutoscaler normally fetches metrics from a series of aggregated
 `autoscaling/v1`
 `autoscaling/v2beta2`
 
+
