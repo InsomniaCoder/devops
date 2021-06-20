@@ -1,0 +1,14 @@
+uniq-ingress: |
+  package library.kubernetes.admission.mutating
+  
+  import data.kubernetes.ingresses
+  
+  deny[msg] {
+  
+      input.request.kind.kind == "Ingress"
+      host := input.request.object.spec.rules[_].host
+      other := ingresses[ns].[name]
+      other.spec.rules[_].host == host
+      other.metadata.namespace != input.request.object.metadata.namespace
+      msg := sprintf("ingress host conflict with ingress in namespace")
+  }
