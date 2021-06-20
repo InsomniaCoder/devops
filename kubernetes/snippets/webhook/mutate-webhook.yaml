@@ -1,0 +1,23 @@
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: mutateme
+  labels:
+    app: mutateme
+webhooks:
+  - name: mutateme.default.svc.cluster.local
+    clientConfig:
+      caBundle: ${CA_BUNDLE}
+      service:
+        name: mutateme
+        namespace: default
+        path: "/mutate"
+    rules:
+      - operations: ["CREATE"]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+    namespaceSelector:
+      matchLabels:
+        mutateme: enabled
