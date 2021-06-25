@@ -1,0 +1,28 @@
+kind: Pod
+metadata:
+  labels:
+    app: test
+  name: test
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - test1
+              - test2
+          topologyKey: topology.kubernetes.io/zone
+        weight: 100
+  containers:
+  - env:
+    - name: A
+      value: "0"
+    image: test
+    imagePullPolicy: IfNotPresent
+    name: test
+  imagePullSecrets:
+  - name: test
