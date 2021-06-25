@@ -11,6 +11,17 @@ kgp podname -o=jsonpath='{.metadata.labels}'
 // apk add --update curl 
 kubectl run -i --tty --rm busybox-test --image=alpine -- sh
 
+// run with labels
+kubectl run -i --tty --rm --labels="a=b" busybox-test --image=alpine -- sh
+
+// run with node selector
+
+kubectl run -i --tty --rm --overrides='{ "apiVersion": "v1", "spec": { "nodeSelector": { "kubernetes.io/hostname": "one-worker-node", "kubernetes.io/hostname": "second-worker-node" } } }' busybox-test --image=alpine -- sh
+
+// run with affinity
+
+kubectl run -i --tty --rm --overrides='{ "spec": { "affinity": { "nodeAffinity": { "requiredDuringSchedulingIgnoredDuringExecution": { "nodeSelectorTerms": [{ "matchExpressions": [{ "key": "kubernetes.io/hostname",  "operator": "In", "values": [ "one-worker-node", "second-worker-node" ]} ]} ]} } } } }' busybox-test --image=alpine -- sh
+
 
 ## Helm
 
