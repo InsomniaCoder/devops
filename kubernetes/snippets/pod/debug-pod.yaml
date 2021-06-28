@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: debug-tools
+  name: debug
+spec:
+  containers:
+  - command:
+    - sleep
+    - infinity
+    image: alpine | or your debugging container
+    name: debug
