@@ -1,0 +1,13 @@
+commonLabels:
+    app: test
+namespace: test
+
+resources:
+- pod.yaml
+
+# please rename this file to kustomization.yaml
+# add namespace and label app:test to pod.yaml file
+# run using ./kustomize build
+# to use with Helm.  do helm template -f a.yaml chart > test.yaml first
+# or use --post-renderer
+# helm install test ../example-chart --post-renderer ./kustomize --debug --dry-run
