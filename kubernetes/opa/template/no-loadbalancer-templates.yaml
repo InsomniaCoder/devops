@@ -1,0 +1,20 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: loadbalancerconstraint
+spec:
+  crd:
+    spec:
+      names:
+        kind: LoadBalancerConstraint
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package insomniacoder.constraint
+
+        violation[{"msg": msg}] {
+          input.review.kind.kind = "Service"
+          input.review.operation = "CREATE"
+          input.review.object.spec.type = "LoadBalancer"
+          msg := "Service type LoadBalancer are restricted"
+        }
