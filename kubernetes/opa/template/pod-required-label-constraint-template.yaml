@@ -1,0 +1,34 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: podrequireslabelsconstraint
+spec:
+  crd:
+    spec:
+      names:
+        kind: PodRequiresLabelsConstraint
+      validation:
+        openAPIV3Schema:
+          properties:
+            labels:
+              type: array
+              items: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package insomniacoder.constraint
+        
+        violation[{"msg": msg}] {
+          input.review.kind.kind = "Pod"
+          input.review.operation = "CREATE"
+          input.review.object.metadata.annotations = "LoadBalancer"
+          msg := "Service type LoadBalancer are restricted"
+        }
+
+        deny[{"msg": msg, "details": {"missing_labels": missing}}] {
+          provided := {label | input.review.object.metadata.labels[label]}
+          required := {label | label := input.parameters.labels[_]}
+          missing := required - provided
+          count(missing) > 0
+          msg := sprintf("you must provide labels: %v", [missing])
+        }
