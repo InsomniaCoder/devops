@@ -1,0 +1,11 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: ResourceNamespaceLabelConstraint
+metadata:
+  name: resourcenamespacelabelconstraint
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["*"]
+    namespaces:
+      - "test-opa-2"
