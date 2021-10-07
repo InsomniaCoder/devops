@@ -73,3 +73,30 @@ There are 2 main configuration files
 To run the command using profiles set up above
 1. add `--profiles <profile>` in your command
 2. add `AWS_PROFILE=<profile>` before your command
+
+## AWS SSM
+
+to connect to EC2 using AWS SSM (System's Manager's Session Manager)
+
+1. get your instance id
+2. run this command
+   ```
+   aws ssm start-session --target <instance-id> --profiles <your-profile>
+   ```
+
+You should be connected to the EC2 now.
+
+
+#### Use SCP
+
+You need to configure your `~/.ssh/config` to add
+
+```
+# 
+host i-* mi-*
+    ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+```
+
+then you can run this command to copy the given file from the instance to your machine
+
+`scp -i private-keys.pem ec2-user@i-xxxxxxxxxxxxxxxxx:/var/etc/test-files .`
