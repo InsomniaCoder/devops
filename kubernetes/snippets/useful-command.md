@@ -22,6 +22,14 @@ kubectl run -i --tty --rm --overrides='{ "apiVersion": "v1", "spec": { "nodeSele
 
 kubectl run -i --tty --rm --overrides='{ "spec": { "affinity": { "nodeAffinity": { "requiredDuringSchedulingIgnoredDuringExecution": { "nodeSelectorTerms": [{ "matchExpressions": [{ "key": "kubernetes.io/hostname",  "operator": "In", "values": [ "one-worker-node", "second-worker-node" ]} ]} ]} } } } }' busybox-test --image=alpine -- sh
 
+## AWS
+
+// get AWS instance id from a Pod name
+
+```
+  kubectl get nodes $(kubectl get pod <pod> -o=jsonpath='{.spec.nodeName}') -o=jsonpath='{.spec.externalID}'
+```
+
 
 ## Helm
 
